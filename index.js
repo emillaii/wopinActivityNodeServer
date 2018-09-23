@@ -47,18 +47,19 @@ client.on('message', function (topic, message) {
                d.getDate().padLeft()].join('-') +' ' +
               [d.getHours().padLeft(),
                d.getMinutes().padLeft()].join(':');
-    console.log(dformat.toString() + " Receive some message " + topic + " "  + message)
+    var uuid = message.toString().substring(0,18)
+    console.log(dformat.toString() + " Receive some message " + topic + " "  + uuid);
     var unix = Math.round(+new Date()/1000);
     if (devices[message.toString()] != undefined) {
     	var prevDrinkTime = devices[message.toString()]
     	var diff = unix - prevDrinkTime
-    	console.log(dformat.toString() + " DrinkTime Diff : " + diff + " id: " + message.toString())
+    	console.log(dformat.toString() + " DrinkTime Diff : " + diff + " id: " + uuid)
     	if (diff > 5 * 60) {
-    		devices[message.toString()] = unix;
-	    	postDrinkEvent(message,  dformat)
+    		devices[uuid] = unix;
+	    	postDrinkEvent(uuid,  dformat)
     	}
     } else {
-    	devices[message.toString()] = unix;
-    	postDrinkEvent(message,  dformat)
+    	devices[uuid] = unix;
+    	postDrinkEvent(uuid,  dformat)
     }
 })
