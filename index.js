@@ -48,16 +48,29 @@ client.on('message', function (topic, message) {
               [d.getHours().padLeft(),
                d.getMinutes().padLeft()].join(':');
     var uuid = message.toString().substring(0,18)
-    console.log(dformat.toString() + " Receive some message " + topic + " "  + uuid);
+    var drink_count = "";
+    if (message.toString().length == 22){
+        drink_count = message.toString().substring(19,21);
+    } else if (message.toString().length == 23)
+    {   
+        drink_count = message.toString().substring(19,22);
+    }
+    var total_drink_count = parseInt(drink_count)
+    console.log(dformat.toString() + " Receive some message " + topic + " "  + uuid + " " + total_drink_count);
     var unix = Math.round(+new Date()/1000);
     if (devices[message.toString()] != undefined) {
     	var prevDrinkTime = devices[message.toString()]
     	var diff = unix - prevDrinkTime
     	console.log(dformat.toString() + " DrinkTime Diff : " + diff + " id: " + uuid)
-    	if (diff > 5 * 60) {
-    		devices[uuid] = unix;
-	    	postDrinkEvent(uuid,  dformat)
-    	}
+    	if (total_drink_count > 60) {
+            total_drink_count = 60
+      }
+      for (var i = 0; i <= total_drink_count; i++) {
+        if (diff > 5 * 60 * (i+1)) {
+            devices[uuid] = unix;
+            postDrinkEvent(uuid,  dformat)
+        }
+      }
     } else {
     	devices[uuid] = unix;
     	postDrinkEvent(uuid,  dformat)
